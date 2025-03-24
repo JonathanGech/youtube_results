@@ -1,4 +1,5 @@
 import 'thumbnail.dart';
+
 /// Represents a YouTube Shorts video with metadata such as title, video ID, and thumbnails.
 /// - `String?` title;
 /// -  `String?` videoId;

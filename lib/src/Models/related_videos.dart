@@ -1,4 +1,3 @@
-
 /// Represent Related videos it can be Shorts or Horizontally aligned videos
 ///  - `String?` title;
 ///  - `List<T>?` relatedVideos;

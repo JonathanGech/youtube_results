@@ -1,6 +1,7 @@
 extension GetOrNullMap on Map {
   /// Retrieves a nested map inside a map, or returns null if the key is absent.
-  Map<String, dynamic>? getMap(String key) => this[key] as Map<String, dynamic>?;
+  Map<String, dynamic>? getMap(String key) =>
+      this[key] as Map<String, dynamic>?;
 
   /// Retrieves a value of type [T] inside a map.
   /// Returns null if the key is absent.

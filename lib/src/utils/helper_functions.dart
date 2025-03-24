@@ -58,7 +58,7 @@ class HelperFunctions {
     return null;
   }
 
-/// Retries a function up to [maxAttempts] times with a delay between attempts.
+  /// Retries a function up to [maxAttempts] times with a delay between attempts.
   static Future<T> retry<T>(
     FutureOr<T> Function() function, {
     int maxAttempts = 3,
@@ -72,9 +72,9 @@ class HelperFunctions {
       } catch (e) {
         attempt++;
         if (attempt >= maxAttempts) {
-          rethrow; 
+          rethrow;
         }
-        await Future.delayed(delay); 
+        await Future.delayed(delay);
       }
     }
     throw Exception('Retry failed after $maxAttempts attempts');

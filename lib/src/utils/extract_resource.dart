@@ -66,10 +66,11 @@ class ExtractResource {
   }
 
   static Playlist _extractPlaylist(Map item) {
-      return Playlist(
+    return Playlist(
       title: _extractText(item['metadata']?['lockupMetadataViewModel']),
-      videoCount: _extractText(item['contentImage']?['collectionThumbnailViewModel']
-                  ?['primaryThumbnail']?['thumbnailViewModel']?['overlays']?[0]
+      videoCount: _extractText(item['contentImage']
+                      ?['collectionThumbnailViewModel']?['primaryThumbnail']
+                  ?['thumbnailViewModel']?['overlays']?[0]
               ['thumbnailOverlayBadgeViewModel']?['thumbnailBadges']?[0]
           ?['thumbnailBadgeViewModel']),
       playListId: item['contentId'],
@@ -79,11 +80,12 @@ class ExtractResource {
       channelUrl: item['metadata']?['lockupMetadataViewModel']?['metadata']
                       ?['contentMetadataViewModel']?['metadataRows']?[0]
                   ?['metadataParts']?[0]?['text']?['commandRuns']?[0]?['onTap']
-              ?['innertubeCommand']?['browseEndpoint']?['canonicalBaseUrl']?.toString().substring(1),
+              ?['innertubeCommand']?['browseEndpoint']?['canonicalBaseUrl']
+          ?.toString()
+          .substring(1),
       thumbnails: getThumbnails(item['contentImage']
               ?['collectionThumbnailViewModel']?['primaryThumbnail']
           ?['thumbnailViewModel']?['image']?['sources']),
-    
     );
   }
 
@@ -94,11 +96,10 @@ class ExtractResource {
       description: _extractText(item['descriptionSnippet']),
       subscriptionCount: _extractText(item['videoCountText']),
       thumbnails: getThumbnails(item['thumbnail']?['thumbnails']),
-      
     );
   }
 
-static Related<Shorts>  _extractShorts(Map items)  {
+  static Related<Shorts> _extractShorts(Map items) {
     final title = _extractText(items['title']);
     final contentItems = items['items'];
 
@@ -111,7 +112,6 @@ static Related<Shorts>  _extractShorts(Map items)  {
 
     return Related<Shorts>(title: title, relatedVideos: results);
   }
-
 
   static Shorts _extractShortItem(Map item) {
     return Shorts(

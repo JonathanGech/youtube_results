@@ -53,67 +53,39 @@ void main() async {
 ```
 #### Retrieve all results based on search query
  ``` dart
+
   List searchResults = await youtube.fetchSearchResults(query);
-  print("Fetching search results for query: $query...");
-  print(searchResults);
+
   ```
 #### Get suggestions based on search query
  ``` dart
+
   List suggestions = await youtube.fetchSuggestions(query);
-  print(suggestions);
+  
   ```
 #### Fetch video using search query
  ``` dart
-  print("Fetching videos for query: $query...");
+
   List<Video>? videos = await youtube.fetchVideos(query);
-  print('''
-      title: ${videos?[0].title}
-      videoId: ${videos?[0].videoId}
-      duration: ${videos?[0].duration}
-      viewCount: ${videos?[0].viewCount}
-      publishedTime: ${videos?[0].publishedTime}
-      channelUrl: ${videos?[0].channelUrl}
-      channelName: ${videos?[0].channelName}
-      description: ${videos?[0].description}
-      thumbnail url: ${videos?[0].thumbnails?[0].url}
-      video length: ${videos?.length}''');
+  
 ```
 #### Fetch channels using search query
 ``` dart
-  print("Fetching channels for query: $query...");
+  
   List<Channel>? channels = await youtube.fetchChannels(query);
-  print('''
-      title: ${channels?[0].title}
-      channelId: ${channels?[0].channelId}
-      channelUrl: ${channels?[0].channelUrl}
-      subscriptionCount: ${channels?[0].subscriptionCount}
-      description: ${channels?[0].description}
-      thumbnail url: ${channels?[0].thumbnails?[0].url}''');
+
 ```
 #### Fetch playlist using search query
 ``` dart
-  print("Fetching playlists for query: $query...");
+  
   List<Playlist>? playlists = await youtube.fetchPlaylists(query);
-  print('''
-      title: ${playlists?[0].title}
-      playListId: ${playlists?[0].playListId}
-      channelName: ${playlists?[0].channelName}
-      channelUrl: ${playlists?[0].channelUrl}
-      videoCount: ${playlists?[0].videoCount}
-      thumbnail url: ${playlists?[0].thumbnails?[0].url}''');
+
 ```
 #### Fetch data about a channel using channelId
 ``` dart
-  print("Fetching channel info for channel ID: $channelId...");
+  
   ChannelInfo? channelInfo = await youtube.fetchChannelInfo(channelId);
-  print('''
-  Title: ${channelInfo?.title}  
-  URL: ${channelInfo?.url}
-  Subscription Count: ${channelInfo?.subscriptionCount}
-  Video Count: ${channelInfo?.videoCount}
-  Description: ${channelInfo?.description}
-  items: ${channelInfo?.items?.length}
-  ''');
+  
  ```
  ### 💡 Tip
 #### ChannelInfo may contain several objects, so be sure to check their types before using them:
@@ -124,52 +96,9 @@ void main() async {
 
 #### Fetch data about a playlist using playlistId
 ``` dart
-  print("Fetching playlist info for playlist ID: $playlistId...");
+  
   PlaylistInfo? playlistInfo = await youtube.fetchPlaylistInfo(playlistId);
-  print('''
-  Title: ${playlistInfo?.title}
-  URL: ${playlistInfo?.url}
-  view Count: ${playlistInfo?.viewCount}
-  Video Count: ${playlistInfo?.videoCount}
-  Description: ${playlistInfo?.description}
-  channelName: ${playlistInfo?.channelName}
-  channelThumbnail: ${playlistInfo?.channelThumbnails?[0].url}''');
-}
-```
-
-### Helper Function to Print Results:
-```dart
-void printResults(List<dynamic> results) async {
-  int videoCount = 0;
-  int channelCount = 0;
-  int playlistCount = 0;
-  int relatedShort = 0;
-  int relatedVideo = 0;
-  int relatedVideoLength = 0;
-  int relatedShortLength = 0;
-
-  results.forEach((element) {
-    if (element is Related<Shorts>) {
-      relatedShort++;
-      relatedShortLength += element.relatedVideos?.length as int;
-    } else if (element is Related<Video>) {
-      relatedVideo++;
-      relatedVideoLength += element.relatedVideos?.length as int;
-    } else if (element is Channel) {
-      channelCount++;
-    } else if (element is Playlist) {
-      playlistCount++;
-    } else if (element is Video) {
-      videoCount++;
-    }
-  });
-
-  print("Video: $videoCount");
-  print("Channel: $channelCount");
-  print("Playlist: $playlistCount");
-  print("Related Videos: $relatedVideo length: $relatedVideoLength");
-  print("Related Shorts: $relatedShort length: $relatedShortLength");
-}
+  
 ```
 
 ---

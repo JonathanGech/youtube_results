@@ -1,7 +1,7 @@
 import 'thumbnail.dart';
 
 /// Represents a YouTube video with metadata such as title, description, duration, and thumbnails and channel information.
-/// - `String?` videoId;
+/// `- String?`  videoId;
 /// - `String?` title;
 /// - `String?` description;
 /// - `String?` duration;

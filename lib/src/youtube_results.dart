@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
 import 'package:flutter/foundation.dart';
@@ -135,7 +136,8 @@ class YoutubeResults {
 
   /// 💡 Fetches search suggestions based on the query.
   Future<List<String>> fetchSuggestions(String query) async {
-    const baseUrl = 'http://suggestqueries.google.com/complete/search?output=toolbar&ds=yt&q=';
+    const baseUrl =
+        'http://suggestqueries.google.com/complete/search?output=toolbar&ds=yt&q=';
     final response =
         await fetchWithRetry('$baseUrl$query', maxAttempts: maxAttempts ?? 3);
 
@@ -165,23 +167,24 @@ class YoutubeResults {
           query == lastQuery &&
           apiKey != null &&
           apiKey != '') {
-        print("$T token: $token");
         return _fetchContinuationResults() as List<T>;
       }
       lastQuery = query;
-        final jsonMap = await _extractResponse('https://www.youtube.com/results?search_query=$query$urlSuffix');
-        if (jsonMap != null) {
-          final contents = _extractSearchContent(jsonMap);
-          if (contents != null) {
-            final extractedItems = ExtractResource.extractAllItems(contents);
-            results = extractedItems.where(filterCondition).cast<T>().toList();
-          }
-          updateToken(_extractSearchContinuationToken(jsonMap));
-        } else {}
-      
+      final jsonMap = await _extractResponse(
+          'https://www.youtube.com/results?search_query=$query$urlSuffix');
+      if (jsonMap != null) {
+        final contents = _extractSearchContent(jsonMap);
+        if (contents != null) {
+          final extractedItems = ExtractResource.extractAllItems(contents);
+          results = extractedItems.where(filterCondition).cast<T>().toList();
+        }
+        updateToken(_extractSearchContinuationToken(jsonMap));
+      } else {
+        log('Response returned null');
+      }
     } catch (e, stackTrace) {
-      print('Error loading for $T messeage: $e');
-      print('Stack trace: $stackTrace');
+      log('Error loading for $T messeage: $e');
+      log('Stack trace: $stackTrace');
     }
 
     return results;
@@ -200,40 +203,40 @@ class YoutubeResults {
     required String logMessage,
   }) async {
     try {
-        final jsonMap =  await _extractResponse(url);
-        if (jsonMap != null) {
-          var contents = extractContent(jsonMap);
-          var metaData = extractMetaData(jsonMap);
-          if (contents != null) {
-            var result = extractItems(contents);
-            updateToken(extractToken(jsonMap));
-            return T == ChannelInfo
-                ? ChannelInfo(
-                    title: metaData?['title'],
-                    description: metaData?['description'],
-                    url: metaData?['url'],
-                    subscriptionCount: metaData?['subscribersCount'],
-                    videoCount: metaData?['videoCount'],
-                    thumbnails: metaData?['thumbnails'],
-                    banner: metaData?['banner'],
-                    items: result,
-                  ) as T
-                : PlaylistInfo(
-                    title: metaData?['title'],
-                    description: metaData?['description'],
-                    url: metaData?['url'],
-                    viewCount: metaData?['viewCount'],
-                    channelName: metaData?['channelName'],
-                    channelThumbnails: metaData?['channelThumbnails'],
-                    videoCount: metaData?['videoCount'],
-                    thumbnails: metaData?['thumbnails'],
-                    items: result,
-                  ) as T;
-          }
+      final jsonMap = await _extractResponse(url);
+      if (jsonMap != null) {
+        var contents = extractContent(jsonMap);
+        var metaData = extractMetaData(jsonMap);
+        if (contents != null) {
+          var result = extractItems(contents);
+          updateToken(extractToken(jsonMap));
+          return T == ChannelInfo
+              ? ChannelInfo(
+                  title: metaData?['title'],
+                  description: metaData?['description'],
+                  url: metaData?['url'],
+                  subscriptionCount: metaData?['subscribersCount'],
+                  videoCount: metaData?['videoCount'],
+                  thumbnails: metaData?['thumbnails'],
+                  banner: metaData?['banner'],
+                  items: result,
+                ) as T
+              : PlaylistInfo(
+                  title: metaData?['title'],
+                  description: metaData?['description'],
+                  url: metaData?['url'],
+                  viewCount: metaData?['viewCount'],
+                  channelName: metaData?['channelName'],
+                  channelThumbnails: metaData?['channelThumbnails'],
+                  videoCount: metaData?['videoCount'],
+                  thumbnails: metaData?['thumbnails'],
+                  items: result,
+                ) as T;
+        }
       }
     } catch (e, stackTrace) {
-      print('erro for loading info $T');
-      print('Stack trace: $stackTrace');
+      log('Error loading info $T');
+      log('Stack trace: $stackTrace');
     }
     return null;
   }
@@ -539,12 +542,12 @@ class YoutubeResults {
         if (jsonMap != null) {
           return jsonMap;
         } else {
-          print('Error: ${response.statusCode}');
+          log('Error response statuscode: ${response.statusCode}');
           return null;
         }
       }
     } catch (e) {
-      print('Exception: $e');
+      log('Network failure: $e');
       return null;
     }
     return null;

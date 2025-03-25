@@ -17,7 +17,7 @@ class Channel {
   /// List of thumbnails representing the channel's images.
   final List<Thumbnail>? thumbnails;
 
-  /// A brief description of the channel.
+  /// Description of the channel.
   final String? description;
 
   /// The total number of videos uploaded by the channel.

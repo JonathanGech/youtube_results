@@ -12,8 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   html: ^0.15.0
-  xml2json: ^5.3.3
-  collection: ^1.16.0
+  xml2json: ^6.2.6
+  collection: ^1.18.0
   http: ^1.3.0
 
 dev_dependencies:

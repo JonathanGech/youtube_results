@@ -17,7 +17,7 @@ class PlaylistInfo {
   /// The URL of the channel's main page.
   final String? url;
 
-  /// Channel name.
+  /// The name of the channel that uploaded the playlist.
   final String? channelName;
 
   /// The total number of videos in the playlist.
@@ -26,7 +26,7 @@ class PlaylistInfo {
   /// The total number of views in the playlist.
   final String? viewCount;
 
-  /// A brief description of the playlist.
+  /// Description of the playlist.
   final String? description;
 
   /// List of thumbnails representing the playlist's images.

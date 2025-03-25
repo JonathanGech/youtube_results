@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:isolate';
 import 'package:http/http.dart' as http;
+import 'package:http/retry.dart';
 import 'package:xml2json/xml2json.dart';
 import 'package:flutter/foundation.dart';
 import 'Models/channel.dart';
@@ -24,6 +26,7 @@ import 'utils/helper_extension.dart';
 ///
 class YoutubeResults {
   final http.Client _client = http.Client();
+  final ReceivePort _receivePort = ReceivePort();
 
   /// - `_searchToken`: Token for the search results.
   String? _searchToken;
@@ -533,28 +536,32 @@ class YoutubeResults {
     );
   }
 
+// Function that calls the isolate
+  Future<Map<String, dynamic>?> _extractResponse(String url) async {
+    await Isolate.spawn(_requestAndContent, [_receivePort.sendPort, url]);
+    final response = await _receivePort.first;
+    return response != null?  _receivePort.first as Map<String, dynamic>: null;
+  }
+
   // Function that runs in an isolate
-  Future<Map<String, dynamic>?> _requestAndContent(String url) async {
+  void _requestAndContent(List args) async {
+    final SendPort sendport = args[0];
+    final String url = args[1];
     try {
       final response = await fetchWithRetry(url, maxAttempts: maxAttempts ?? 3);
       if (response.statusCode == 200) {
         final jsonMap = HelperFunctions.getJsonMap(response);
         if (jsonMap != null) {
-          return jsonMap;
+          sendport.send(jsonMap);
         } else {
           log('Error response statuscode: ${response.statusCode}');
-          return null;
+          sendport.send(null);
         }
       }
     } catch (e) {
       log('Network failure: $e');
-      return null;
+      sendport.send(null);
     }
-    return null;
-  }
-
-// Function that calls the isolate
-  Future<Map<String, dynamic>?> _extractResponse(String url) async {
-    return compute(_requestAndContent, url);
+    sendport.send(null);
   }
 }

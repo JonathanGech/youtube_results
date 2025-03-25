@@ -22,7 +22,7 @@ class ChannelInfo {
   /// The total number of videos uploaded by the channel.
   final String? videoCount;
 
-  /// A brief description of the channel.
+  /// Description of the channel.
   final String? description;
 
   /// List of thumbnails representing the channel's images.

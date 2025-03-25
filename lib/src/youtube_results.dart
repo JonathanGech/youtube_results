@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
@@ -536,30 +537,36 @@ class YoutubeResults {
 
 // Function that calls the isolate
   Future<Map<String, dynamic>?> _extractResponse(String url) async {
+    final Completer<Map<String, dynamic>?> completer = Completer();
+
+    // Spawn the isolate
     await Isolate.spawn(_requestAndContent, [_receivePort.sendPort, url]);
-    final response = await _receivePort.first;
-    return response != null ? _receivePort.first as Map<String, dynamic> : null;
+
+    // Listen for response
+    _receivePort.listen((message) {
+      completer.complete(message as Map<String, dynamic>?);
+      _receivePort.close(); // Close port after receiving message
+    });
+
+    return completer.future;
   }
 
-  // Function that runs in an isolate
-  void _requestAndContent(List args) async {
-    final SendPort sendport = args[0];
+  Future<void> _requestAndContent(List args) async {
+    final SendPort sendPort = args[0];
     final String url = args[1];
+
     try {
-      final response = await fetchWithRetry(url, maxAttempts: maxAttempts ?? 3);
+      final response = await fetchWithRetry(url, maxAttempts: 3);
       if (response.statusCode == 200) {
         final jsonMap = HelperFunctions.getJsonMap(response);
-        if (jsonMap != null) {
-          sendport.send(jsonMap);
-        } else {
-          log('Error response statuscode: ${response.statusCode}');
-          sendport.send(null);
-        }
+        sendPort.send(jsonMap);
+      } else {
+        log('Error response statuscode: ${response.statusCode}');
+        sendPort.send(null);
       }
     } catch (e) {
       log('Network failure: $e');
-      sendport.send(null);
+      sendPort.send(null);
     }
-    sendport.send(null);
   }
 }

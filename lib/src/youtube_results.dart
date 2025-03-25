@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'package:http/http.dart' as http;
-import 'package:http/retry.dart';
 import 'package:xml2json/xml2json.dart';
-import 'package:flutter/foundation.dart';
 import 'Models/channel.dart';
 import 'Models/channel_info.dart';
 import 'Models/playlist.dart';
@@ -540,7 +538,7 @@ class YoutubeResults {
   Future<Map<String, dynamic>?> _extractResponse(String url) async {
     await Isolate.spawn(_requestAndContent, [_receivePort.sendPort, url]);
     final response = await _receivePort.first;
-    return response != null?  _receivePort.first as Map<String, dynamic>: null;
+    return response != null ? _receivePort.first as Map<String, dynamic> : null;
   }
 
   // Function that runs in an isolate

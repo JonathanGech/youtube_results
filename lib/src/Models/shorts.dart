@@ -12,7 +12,7 @@ class Shorts {
 
   /// Unique identifier for the Shorts video.
   final String? videoId;
-  
+
   /// The views of the Shorts video.
   final String? viewCount;
 

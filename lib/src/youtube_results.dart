@@ -26,7 +26,7 @@ import 'utils/helper_extension.dart';
 ///
 class YoutubeResults {
   final http.Client _client = http.Client();
-  final ReceivePort _receivePort = ReceivePort();
+  
 
   /// - `_searchToken`: Token for the search results.
   String? _searchToken;
@@ -541,6 +541,7 @@ class YoutubeResults {
       dynamic responseBody) async {
     try {
       final jsonMap = HelperFunctions.getJsonMap(responseBody);
+ log("Data parsed successfully.");
       return jsonMap;
     } catch (e) {
       log('Network failure: $e');
@@ -553,6 +554,7 @@ class YoutubeResults {
     try {
       final response = await fetchWithRetry(url, maxAttempts: maxAttempts ?? 3);
       if (response.statusCode == 200) {
+log("Response status code: ${response.statusCode}");
         final jsonMap = await Isolate.run(() => _requestAndContent(url));
         if (jsonMap != null) {
           return jsonMap;

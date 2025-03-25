@@ -23,7 +23,7 @@ It also leverages the power of **Isolates** (using Flutter's `compute` function)
 1. Add `youtube_results` to your `pubspec.yaml` file:
    ```yaml
    dependencies:
-     youtube_results: ^1.0.0
+     youtube_results: ^0.0.1
    ```
 
 2. Run:

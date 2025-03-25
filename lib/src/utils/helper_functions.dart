@@ -36,8 +36,8 @@ class HelperFunctions {
   }
 
   /// Parses the response body and returns a JSON map if found, else null.
-  static Map<String, dynamic>? getJsonMap(http.Response response) {
-    final responseBody = response.body;
+  static Map<String, dynamic>? getJsonMap(String response) {
+    final responseBody = response;
     final document = parser.parse(responseBody);
 
     final scriptElements = document

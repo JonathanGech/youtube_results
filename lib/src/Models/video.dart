@@ -24,7 +24,7 @@ class Video {
   /// The duration of the video.
   final String? duration;
 
-  /// P
+  /// The time when the video was published.
   final String? publishedTime;
 
   /// The total number of views the video has received.

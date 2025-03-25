@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:isolate';
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
@@ -536,37 +537,34 @@ class YoutubeResults {
   }
 
 // Function that calls the isolate
-  Future<Map<String, dynamic>?> _extractResponse(String url) async {
-    final Completer<Map<String, dynamic>?> completer = Completer();
-
-    // Spawn the isolate
-    await Isolate.spawn(_requestAndContent, [_receivePort.sendPort, url]);
-
-    // Listen for response
-    _receivePort.listen((message) {
-      completer.complete(message as Map<String, dynamic>?);
-      _receivePort.close(); // Close port after receiving message
-    });
-
-    return completer.future;
+  FutureOr<Map<String, dynamic>?> _requestAndContent(
+      dynamic responseBody) async {
+    try {
+      final jsonMap = HelperFunctions.getJsonMap(responseBody);
+      return jsonMap;
+    } catch (e) {
+      log('Network failure: $e');
+      return null;
+    }
   }
 
-  Future<void> _requestAndContent(List args) async {
-    final SendPort sendPort = args[0];
-    final String url = args[1];
-
+// Function that calls the isolate
+  Future<Map<String, dynamic>?> _extractResponse(String url) async {
     try {
-      final response = await fetchWithRetry(url, maxAttempts: 3);
+      final response = await fetchWithRetry(url, maxAttempts: maxAttempts ?? 3);
       if (response.statusCode == 200) {
-        final jsonMap = HelperFunctions.getJsonMap(response);
-        sendPort.send(jsonMap);
-      } else {
-        log('Error response statuscode: ${response.statusCode}');
-        sendPort.send(null);
+        final jsonMap = await Isolate.run(() => _requestAndContent(url));
+        if (jsonMap != null) {
+          return jsonMap;
+        } else {
+          log('Error response statuscode: ${response.statusCode}');
+          return null;
+        }
       }
     } catch (e) {
       log('Network failure: $e');
-      sendPort.send(null);
+      return null;
     }
+    return null;
   }
 }

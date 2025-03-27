@@ -3,24 +3,25 @@ import 'dart:developer';
 import 'package:youtube_results/youtube_results.dart';
 
 void main() async {
-  // Initialize with your API key
-  final youtube = YoutubeResults();
+  try {
+    // change all log to print.
+    final youtube = YoutubeResults();
 
-  // Sample test data
-  String query = "Flutter tutorial";
-  String channelId = "UCwXdFgeE9KYzlDdR7TG9cMw";
-  String playlistId = "PLjxrf2q8roU2z-h4tG3T_4ORhqyfzYLlh";
+    // Sample test data
+    String query = "Flutter tutorial";
+    String channelId = "UCwXdFgeE9KYzlDdR7TG9cMw";
+    String playlistId = "PLjxrf2q8roU2z-h4tG3T_4ORhqyfzYLlh";
 
-  log("Fetching search results for query: $query...");
-  List searchResults = await youtube.fetchSearchResults(query);
-  log('${searchResults.length}');
+    log("Fetching search results for query: $query...");
+    List searchResults = await youtube.fetchSearchResults(query);
+    log('${searchResults.length}');
 
-  List suggestions = await youtube.fetchSuggestions(query);
-  log('${suggestions[0]}');
+    List suggestions = await youtube.fetchSuggestions(query);
+    log('${suggestions[0]}');
 
-  log("\nFetching videos for query: $query...");
-  List<Video>? videos = await youtube.fetchVideos(query);
-  log('''
+    log("\nFetching videos for query: $query...");
+    List<Video>? videos = await youtube.fetchVideos(query);
+    log('''
       title: ${videos?[0].title}
       videoId: ${videos?[0].videoId}
       videoId: ${videos?[0].duration}
@@ -34,9 +35,9 @@ void main() async {
       thumbnail width: ${videos?[0].thumbnails?[0].width}
       playlists length : ${videos?.length}''');
 
-  log("\nFetching channels for query: $query...");
-  List<Channel>? channels = await youtube.fetchChannels(query);
-  log('''
+    log("\nFetching channels for query: $query...");
+    List<Channel>? channels = await youtube.fetchChannels(query);
+    log('''
       title: ${channels?[0].title}
       channelId: ${channels?[0].channelId}
       channelUrl: ${channels?[0].channelUrl}
@@ -47,9 +48,9 @@ void main() async {
       thumbnail width: ${channels?[0].thumbnails?[0].width}
       channels length : ${channels?.length}''');
 
-  log("\nFetching playlists for query: $query...");
-  List<Playlist>? playlists = await youtube.fetchPlaylists(query);
-  log('''
+    log("\nFetching playlists for query: $query...");
+    List<Playlist>? playlists = await youtube.fetchPlaylists(query);
+    log('''
       title: ${playlists?[0].title}
       playListId: ${playlists?[0].playListId}
       channelName: ${playlists?[0].channelName}
@@ -60,10 +61,10 @@ void main() async {
       thumbnail width: ${playlists?[0].thumbnails?[0].width}
       playlists length : ${playlists?.length}''');
 
-  log("\nFetching channel info for channel ID: $channelId...");
-  ChannelInfo? channelInfo = await youtube.fetchChannelInfo(channelId);
+    log("\nFetching channel info for channel ID: $channelId...");
+    ChannelInfo? channelInfo = await youtube.fetchChannelInfo(channelId);
 
-  log('''
+    log('''
   Title: ${channelInfo?.title}  
   URL: ${channelInfo?.url}
   Subscription Count: ${channelInfo?.subscriptionCount}
@@ -73,9 +74,9 @@ void main() async {
   
   ''');
 
-  log("\nFetching playlist info for playlist ID: $playlistId...");
-  PlaylistInfo? playlistInfo = await youtube.fetchPlaylistInfo(playlistId);
-  log('''
+    log("\nFetching playlist info for playlist ID: $playlistId...");
+    PlaylistInfo? playlistInfo = await youtube.fetchPlaylistInfo(playlistId);
+    log('''
   Title: ${playlistInfo?.title}
   URL: ${playlistInfo?.url}
   view Count: ${playlistInfo?.viewCount}
@@ -86,10 +87,13 @@ void main() async {
   thumbnail : ${playlistInfo?.thumbnails?[0].url}
   items: ${playlistInfo?.items?.length}
 ''');
+  } catch (e, stackTrace) {
+    log('here is your bug $e and $stackTrace');
+  }
 }
 
 /// Helper function to log results
-void printResults(List<dynamic> results) async {
+void logResults(List<dynamic> results) async {
   int videoCout = 0;
   int channelCount = 0;
   int playlistCount = 0;

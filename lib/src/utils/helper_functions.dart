@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart' as parser;
-import 'package:http/http.dart' as http;
 
 class HelperFunctions {
   /// Extracts JSON from a string and returns it as a Map if found, else null.

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:isolate';
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
@@ -26,7 +25,6 @@ import 'utils/helper_extension.dart';
 ///
 class YoutubeResults {
   final http.Client _client = http.Client();
-  
 
   /// - `_searchToken`: Token for the search results.
   String? _searchToken;
@@ -536,26 +534,32 @@ class YoutubeResults {
     );
   }
 
-// Function that calls the isolate
-  FutureOr<Map<String, dynamic>?> _requestAndContent(
-      dynamic responseBody) async {
-    try {
-      final jsonMap = HelperFunctions.getJsonMap(responseBody);
- log("Data parsed successfully.");
-      return jsonMap;
-    } catch (e) {
-      log('Network failure: $e');
-      return null;
-    }
-  }
+// // Function that calls the isolate
+//   Map<String, dynamic>? _requestAndContent(String responseBody) {
+//     try {
+//       final jsonMap =
+//       if (jsonMap != null) {
+//         log('Json map successfully extracted');
+//         return jsonMap;
+//       } else {
+//         log('JsonMap is not extracted');
+//         return null;
+//       }
+//     } catch (e) {
+//       log('Network failure: $e');
+//       return null;
+//     }
+//   }
 
 // Function that calls the isolate
   Future<Map<String, dynamic>?> _extractResponse(String url) async {
     try {
       final response = await fetchWithRetry(url, maxAttempts: maxAttempts ?? 3);
+
       if (response.statusCode == 200) {
-log("Response status code: ${response.statusCode}");
-        final jsonMap = await Isolate.run(() => _requestAndContent(url));
+        log('Fetching result Response code :${response.statusCode}');
+        final jsonMap =
+            await Isolate.run(() => HelperFunctions.getJsonMap(response.body));
         if (jsonMap != null) {
           return jsonMap;
         } else {

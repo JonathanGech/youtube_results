@@ -42,6 +42,15 @@ class ExtractResource {
           : [];
     }).toList();
   }
+static List<dynamic> extractVideoData(List jsonData) {
+    final items = jsonData
+        .map((item) => item['compactVideoRenderer'] != null
+            ? _extractVideo(item['compactVideoRenderer'])
+            : null)
+        .whereType<dynamic>() 
+        .toList();
+    return items;
+  }
 
   static List<dynamic> _extractItems(List content) {
     return content

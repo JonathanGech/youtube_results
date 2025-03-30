@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.0] - Search Video by ID Now Available
+
+### New Features
+
+- **Search by Video ID**: You can now retrieve video details using a **specific video ID**.
 
 ## [0.0.2] - Bug Fix & Improvement
 

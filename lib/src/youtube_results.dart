@@ -8,6 +8,7 @@ import 'Models/channel.dart';
 import 'Models/channel_info.dart';
 import 'Models/playlist.dart';
 import 'Models/playlist_info.dart';
+import 'Models/video_info.dart';
 import 'Models/thumbnail.dart';
 import 'Models/video.dart';
 import 'utils/extract_resource.dart';
@@ -135,6 +136,20 @@ class YoutubeResults {
     );
   }
 
+  /// 💡 Fetches detailed information about a specific video.
+
+  Future<VideoInfo?> fetchVideoInfo(String videoId) async {
+    return _fetchPageData<VideoInfo>(
+      url: 'https://www.youtube.com/watch?v=$videoId',
+      extractContent: _extractVideoContent,
+      extractMetaData: _extractVideoMetadata,
+      extractItems: ExtractResource.extractVideoData,
+      updateToken: (token) => _videoToken = token,
+      extractToken: _extractVideoContinuationToken,
+      logMessage: 'Video info extracted successfully',
+    );
+  }
+
   /// 💡 Fetches search suggestions based on the query.
   Future<List<String>> fetchSuggestions(String query) async {
     const baseUrl =
@@ -211,28 +226,44 @@ class YoutubeResults {
         if (contents != null) {
           var result = extractItems(contents);
           updateToken(extractToken(jsonMap));
-          return T == ChannelInfo
-              ? ChannelInfo(
-                  title: metaData?['title'],
-                  description: metaData?['description'],
-                  url: metaData?['url'],
-                  subscriptionCount: metaData?['subscribersCount'],
-                  videoCount: metaData?['videoCount'],
-                  thumbnails: metaData?['thumbnails'],
-                  banner: metaData?['banner'],
-                  items: result,
-                ) as T
-              : PlaylistInfo(
-                  title: metaData?['title'],
-                  description: metaData?['description'],
-                  url: metaData?['url'],
-                  viewCount: metaData?['viewCount'],
-                  channelName: metaData?['channelName'],
-                  channelThumbnails: metaData?['channelThumbnails'],
-                  videoCount: metaData?['videoCount'],
-                  thumbnails: metaData?['thumbnails'],
-                  items: result,
-                ) as T;
+           if (T == ChannelInfo) {
+            return ChannelInfo(
+              title: metaData?['title'],
+              description: metaData?['description'],
+              url: metaData?['url'],
+              subscriptionCount: metaData?['subscribersCount'],
+              videoCount: metaData?['videoCount'],
+              thumbnails: metaData?['thumbnails'],
+              banner: metaData?['banner'],
+              items: result,
+            ) as T;
+          } else if (T == PlaylistInfo) {
+            return PlaylistInfo(
+              title: metaData?['title'],
+              description: metaData?['description'],
+              url: metaData?['url'],
+              viewCount: metaData?['viewCount'],
+              channelName: metaData?['channelName'],
+              channelThumbnails: metaData?['channelThumbnails'],
+              videoCount: metaData?['videoCount'],
+              thumbnails: metaData?['thumbnails'],
+              items: result,
+            ) as T;
+          } else if (T == VideoInfo) {
+            return VideoInfo(
+              title: metaData?['title'],
+              description: metaData?['description'],
+              publishedTime: metaData?['publishedTime'],
+              viewCount: metaData?['viewCount'],
+              likes: metaData?['likes'],
+              channelName: metaData?['channelName'],
+              channelId: metaData?['channelId'],
+              url: metaData?['url'],
+              subscriptionCount: metaData?['subscriptionCount'],
+              channelThumbnails: metaData?['channelThumbnails'],
+              items: result,
+            ) as T;
+          }
         }
       }
     } catch (e, stackTrace) {
@@ -290,6 +321,17 @@ class YoutubeResults {
         ?.elementAtSafe(0)
         ?.getMap('itemSectionRenderer')
         ?.getList('contents');
+  }
+
+   /// Extracts video content from the response.
+
+  List<dynamic>? _extractVideoContent(Map<String, dynamic> jsonMap) {
+    return jsonMap
+        .getMap('contents')
+        ?.getMap('twoColumnWatchNextResults')
+        ?.getMap('secondaryResults')
+        ?.getMap('secondaryResults')
+        ?.getList('results');
   }
 
   /// Extracts the channel metadata from the JSON data.
@@ -459,6 +501,117 @@ class YoutubeResults {
     };
   }
 
+  /// Extracts the video metadata from the JSON response.
+  
+  Map<String, dynamic>? _extractVideoMetadata(Map<String, dynamic> jsonMap) {
+    var primary = jsonMap
+        .getMap('contents')
+        ?.getMap('twoColumnWatchNextResults')
+        ?.getMap('results')
+        ?.getMap('results')
+        ?.getList('contents');
+
+    String? title, description, publishedTime, viewCount, likes;
+    String? channelName, channelId, url, subscriptionCount;
+    List<Thumbnail?>? channelThumbnail;
+
+    // Extract video metadata if `primary` is not null
+    if (primary != null) {
+      Map? headerRenderer = primary
+          .firstWhere(
+            (items) => items['videoPrimaryInfoRenderer'] != null,
+            orElse: () => {},
+          )
+          .getMap('videoPrimaryInfoRenderer');
+
+      title = headerRenderer
+          ?.getMap('title')
+          ?.getList('runs')
+          ?.elementAtSafe(0)
+          ?.getT<String>('text');
+
+      publishedTime = headerRenderer
+          ?.getMap('relativeDateText')
+          ?.getT<String>('simpleText');
+
+      viewCount = headerRenderer
+          ?.getMap('viewCount')
+          ?.getMap('videoViewCountRenderer')
+          ?.getMap('shortViewCount')
+          ?.getT<String>('simpleText');
+
+      likes = headerRenderer
+          ?.getMap('videoActions')
+          ?.getMap('menuRenderer')
+          ?.getList('topLevelButtons')
+          ?.elementAtSafe(0)
+          ?.getMap('segmentedLikeDislikeButtonViewModel')
+          ?.getMap('likeButtonViewModel')
+          ?.getMap('likeButtonViewModel')
+          ?.getMap('toggleButtonViewModel')
+          ?.getMap('toggleButtonViewModel')
+          ?.getMap('defaultButtonViewModel')
+          ?.getMap('buttonViewModel')
+          ?.getT<String>('title');
+
+      headerRenderer = primary
+          .firstWhere(
+            (items) => items.getMap('videoSecondaryInfoRenderer') != null,
+            orElse: () => {},
+          )
+          .getMap('videoSecondaryInfoRenderer');
+
+      Map? channelInfo =
+          headerRenderer?.getMap('owner')?.getMap('videoOwnerRenderer');
+
+      channelName = channelInfo
+          ?.getMap('title')
+          ?.getList('runs')
+          ?.elementAtSafe(0)
+          ?.getT<String>('text');
+
+      channelId = channelInfo
+          ?.getMap('title')
+          ?.getList('runs')
+          ?.elementAtSafe(0)
+          ?.getMap('navigationEndpoint')
+          ?.getMap('browseEndpoint')
+          ?.getT<String>('browseId');
+      url = channelInfo
+          ?.getMap('title')
+          ?.getList('runs')
+          ?.elementAtSafe(0)
+          ?.getMap('navigationEndpoint')
+          ?.getMap('browseEndpoint')
+          ?.getT<String>('canonicalBaseUrl')
+          ?.substring(1);
+
+      subscriptionCount = channelInfo
+          ?.getMap('subscriberCountText')
+          ?.getT<String>('simpleText');
+
+      channelThumbnail = ExtractResource.getThumbnails(
+          channelInfo?.getMap('thumbnail')?.getList('thumbnails'));
+
+      description = headerRenderer
+          ?.getMap('attributedDescription')
+          ?.getT<String>('content');
+    }
+
+    return {
+      'title': title,
+      'description': description,
+      'publishedTime': publishedTime,
+      'viewCount': viewCount,
+      'likes': likes,
+      'channelName': channelName,
+      'channelId': channelId,
+      'url': url,
+      'subscriptionCount': subscriptionCount,
+      'channelThumbnails': channelThumbnail,
+    };
+  }
+
   /// Extracts Search continuation token from JSON response.
 
   String _extractSearchContinuationToken(Map<String, dynamic> jsonMap) {
@@ -525,6 +678,31 @@ class YoutubeResults {
         ?.getT<String>('token');
   }
 
+  /// Extracts Video continuation token from JSON response.
+
+  String? _extractVideoContinuationToken(Map<String, dynamic> jsonMap) {
+    return jsonMap
+        .getMap('contents')
+        ?.getMap('twoColumnWatchNextResults')
+        ?.getMap('results')
+        ?.getMap('results')
+        ?.getList('contents')
+        ?.firstWhere(
+          (item) => item['itemSectionRenderer'] != null,
+          orElse: () => {},
+        )
+        .getList('contents')
+        ?.firstWhere(
+          (item) => item['continuationItemRenderer'] != null,
+          orElse: () => {},
+        )
+        .getMap('continuationEndpoint')
+        ?.getMap('continuationCommand')
+        ?.getT<String>('token');
+  }
+
+  /// Fetches a URL with retry logic consisting maxAttempt in case of failure.
+  
   Future<http.Response> fetchWithRetry(String url,
       {int maxAttempts = 3}) async {
     return HelperFunctions.retry(
@@ -533,23 +711,6 @@ class YoutubeResults {
       delay: const Duration(seconds: 2),
     );
   }
-
-// // Function that calls the isolate
-//   Map<String, dynamic>? _requestAndContent(String responseBody) {
-//     try {
-//       final jsonMap =
-//       if (jsonMap != null) {
-//         log('Json map successfully extracted');
-//         return jsonMap;
-//       } else {
-//         log('JsonMap is not extracted');
-//         return null;
-//       }
-//     } catch (e) {
-//       log('Network failure: $e');
-//       return null;
-//     }
-//   }
 
 // Function that calls the isolate
   Future<Map<String, dynamic>?> _extractResponse(String url) async {

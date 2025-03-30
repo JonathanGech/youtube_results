@@ -9,3 +9,4 @@ export 'src/Models/thumbnail.dart';
 export 'src/Models/related_videos.dart';
 export 'src/Models/channel_info.dart';
 export 'src/Models/playlist_info.dart';
+export 'src/Models/video_info.dart';

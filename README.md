@@ -23,7 +23,7 @@ It also leverages the power of **Isolates** (using `Isolate.run` function) to ex
 1. Add `youtube_results` to your `pubspec.yaml` file:
    ```yaml
    dependencies:
-     youtube_results: ^0.0.2
+     youtube_results: ^0.1.0
    ```
 
 2. Run:
@@ -36,19 +36,21 @@ It also leverages the power of **Isolates** (using `Isolate.run` function) to ex
 ## **🔧 Usage**
 
 ### Example Code:
- #### Initialize with your API key or set it as it is.
+ #### Api Key Is Not Required.
 ```dart
 import 'package:youtube_results/youtube_results.dart';
 
 void main() async {
 
-  /// Initialize with your API key
+  
   final youtube = YoutubeResults();
 
   // Sample test data
   String query = "Flutter tutorial";
   String channelId = "UCwXdFgeE9KYzlDdR7TG9cMw";
   String playlistId = "PLjxrf2q8roU2z-h4tG3T_4ORhqyfzYLlh";
+  String videoId = '4AoFA19gbLo';
+
 
 ```
 #### Retrieve all results based on a search query
@@ -90,7 +92,7 @@ void main() async {
  ### 💡 Tip
 #### ChannelInfo may contain several objects, so be sure to check their types before using them:
   - **`Video`**
-  - **`Playlist`**
+  - **`Related<Playlist>`**
   - **`Related<Short>`**
   - **`Related<Video>`**
 
@@ -98,6 +100,14 @@ void main() async {
 ``` dart
   
   PlaylistInfo? playlistInfo = await youtube.fetchPlaylistInfo(playlistId);
+ 
+ 
+```
+#### Fetch video details using videoId
+``` dart
+  
+  VideoInfo? videoInfo = await youtube.fetchVideoInfo(videoId);
+
  
  } 
 ```

@@ -1,6 +1,6 @@
 name: youtube_results
 description: "youtube_results is a lightweight Flutter & Dart package for fetching YouTube search results, videos, Shorts, channels, playlists, and related videos via the YouTube Data API."
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/JonathanGech/youtube_results
 repository: https://github.com/JonathanGech/youtube_results.git
 

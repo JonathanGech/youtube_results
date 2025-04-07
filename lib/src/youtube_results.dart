@@ -360,12 +360,12 @@ class YoutubeResults {
         ?.getMap('avatar')
         ?.getMap('avatarViewModel')
         ?.getMap('image')
-        ?.getList('source'));
+        ?.getList('sources'));
     List<Thumbnail?> banner = ExtractResource.getThumbnails(result
         ?.getMap('banner')
         ?.getMap('imageBannerViewModel')
         ?.getMap('image')
-        ?.getList('source'));
+        ?.getList('sources'));
 
     String? url = result
         ?.getMap('metadata')

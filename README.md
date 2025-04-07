@@ -23,7 +23,7 @@ It also leverages the power of **Isolates** (using `Isolate.run` function) to ex
 1. Add `youtube_results` to your `pubspec.yaml` file:
    ```yaml
    dependencies:
-     youtube_results: ^0.1.0
+     youtube_results: ^latest
    ```
 
 2. Run:
@@ -167,7 +167,7 @@ Stay tuned for updates!
 ---
 
 ## **📜 License**  
-This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the **Apache License**. See the [LICENSE](./LICENSE) file for details.
 
 ---
 

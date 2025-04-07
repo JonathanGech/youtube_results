@@ -72,6 +72,8 @@ void main() async {
       Subscription Count: ${channelInfo?.subscriptionCount}
       Video Count: ${channelInfo?.videoCount}
       Description: ${channelInfo?.description}
+      Thumbnails: ${channelInfo?.thumbnails?[0].url}
+      Banner: ${channelInfo?.banner?[0].url}
       items: ${channelInfo?.items?.length}
   
   ''');

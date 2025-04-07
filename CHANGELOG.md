@@ -1,4 +1,11 @@
 # Changelog
+## [0.1.1] - Bug Fix
+
+### Fixes
+
+- **Channel `banner` and `thumbnail`**: Now load correctly as expected.
+---
+
 ## [0.1.0] - Search Video by ID Now Available
 
 ### New Features
